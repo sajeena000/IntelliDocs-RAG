@@ -49,7 +49,6 @@ def chat(req: ChatRequest, db: Session = Depends(get_db)) -> ChatResponse:
             if booking_attempt.booking is not None:
                 booking_row = booking_service.save_booking(db, booking_attempt.booking)
 
-                # Optional: finalize with function result for a friendly reply
                 contents = []
                 for turn in history[-10:]:
                     role = turn.get("role", "user")
