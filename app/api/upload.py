@@ -96,7 +96,6 @@ def ingest_documents(
 
         vector_service.upsert_points(point_ids, vectors, payloads)
 
-        # Update qdrant ids in DB
         for ch, pid in zip(chunk_rows, point_ids):
             ch.qdrant_point_id = pid
         db.add_all(chunk_rows)
