@@ -1,38 +1,38 @@
-﻿# IntelliDocs-RAG: Advanced Conversational AI with Hybrid Search and Tool Calling
+# IntelliDocs-RAG: Advanced Conversational AI with Hybrid Search and Tool Calling
 
 IntelliDocs-RAG is a comprehensive backend system built with FastAPI that provides a powerful and accurate solution for conversing with your documents. It goes beyond basic RAG by implementing a production-grade pipeline featuring hybrid search, cross-encoder reranking, and intelligent tool-calling for tasks like booking appointments.
 
-## ✨ Features
+## Features
 
--   **📄 Document Ingestion API**: Upload `.pdf` and `.txt` files through a simple REST endpoint.
--   **🧩 Selectable Chunking Strategies**: Choose between `fixed-size` character chunking or advanced `semantic` chunking that groups sentences by their meaning.
--   **🚀 Advanced RAG Pipeline**:
+-   **Document Ingestion API**: Upload `.pdf` and `.txt` files through a simple REST endpoint.
+-   **Selectable Chunking Strategies**: Choose between `fixed-size` character chunking or advanced `semantic` chunking that groups sentences by their meaning.
+-   **Advanced RAG Pipeline**:
     -   **Hybrid Search**: Combines the strengths of keyword-based search (**BM25**) and semantic vector search (**Qdrant**) to retrieve the most relevant documents.
     -   **Cross-Encoder Reranking**: A second-stage reranker refines the search results, significantly boosting context precision before it's sent to the LLM.
--   **💬 Conversational Chat API**:
+-   **Conversational Chat API**:
     -   **Multi-Turn Memory**: Maintains conversation history using **Redis**, allowing for follow-up questions and contextual understanding.
     -   **Dual LLM Support**: Easily switch between a powerful cloud model (**Google Gemini**) and a fast, local model (**Llama.cpp / Qwen**).
--   **🛠️ Intelligent Tool Calling**:
+-   **Intelligent Tool Calling**:
     -   **Interview Booking**: The system can detect a user's intent to book an interview and use **Gemini's native Function Calling** to reliably extract details (name, email, date, time).
     -   **Data Persistence**: Booking information is saved to a **PostgreSQL** database.
--   **📦 Fully Containerized**: The entire application stack (API, databases, vector store) is managed with **Docker and Docker Compose** for easy setup and deployment.
--   **🏗️ Modular & Scalable Architecture**: Built using a clean, service-oriented architecture that separates concerns and follows industry best practices.
+-   **Fully Containerized**: The entire application stack (API, databases, vector store) is managed with **Docker and Docker Compose** for easy setup and deployment.
+-   **Modular & Scalable Architecture**: Built using a clean, service-oriented architecture that separates concerns and follows industry best practices.
 
-## 🛠️ Tech Stack
+## Tech Stack
 
-| Category              | Technology                                                                                             |
-| --------------------- | ------------------------------------------------------------------------------------------------------ |
-| **Backend**           | Python 3.12, FastAPI, Uvicorn                                                                          |
-| **Databases**         | **PostgreSQL** (Metadata & Bookings), **Qdrant** (Vector Store), **Redis** (Chat Memory)                 |
-| **AI / RAG Pipeline** | `sentence-transformers` (Embeddings & Reranking), `rank-bm25` (Sparse Search)                          |
-| **Language Models**   | `google-genai` (Gemini for Generation & Tool Calling), `llama-cpp-python` (Local LLM Support)            |
-| **Deployment**        | Docker, Docker Compose                                                                                 |
+| Category | Technology |
+| :--- | :--- |
+| **Backend** | Python 3.12, FastAPI, Uvicorn |
+| **Databases** | **PostgreSQL** (Metadata & Bookings), **Qdrant** (Vector Store), **Redis** (Chat Memory) |
+| **AI / RAG Pipeline** | `sentence-transformers` (Embeddings & Reranking), `rank-bm25` (Sparse Search) |
+| **Language Models** | `google-genai` (Gemini for Generation & Tool Calling), `llama-cpp-python` (Local LLM Support) |
+| **Deployment** | Docker, Docker Compose |
 
-## 📂 Project Structure
+## Project Structure
 
 The project follows a clean, modular structure to ensure maintainability and scalability.
 
-```
+```text
 .
 ├── app/
 │   ├── api/          # FastAPI routers (endpoints)
@@ -46,9 +46,10 @@ The project follows a clean, modular structure to ensure maintainability and sca
 ├── .env              # (Git-ignored) Environment variables
 ├── docker-compose.yml # Docker service definitions
 ├── Dockerfile        # Docker build instructions for the API
-└── README.md         # This file```
+└── README.md         # This file
+```
 
-## 🚀 Getting Started
+## Getting Started
 
 Follow these steps to set up and run the project locally.
 
@@ -110,15 +111,46 @@ Download the following models and place them in the specified paths:
 
 ### 5. Build and Run with Docker
 
-Once the models are in place, start the entire application stack with a single command:
+Once the models are in place, you can manage the entire application stack using Docker Compose.
+
+**1. Build the Docker Images**
+
+This command builds the image for the API service as defined in the `Dockerfile`. You only need to run this the first time or after changing dependencies in `requirements.txt` or the `Dockerfile` itself.
 
 ```bash
-docker-compose up --build
+docker-compose build
 ```
 
-The API will be available at `http://localhost:8000`.
+**2. Start the Services**
 
-## 📖 API Usage
+This command starts all services (API, PostgreSQL, Redis, Qdrant) in the background.
+
+```bash
+docker-compose up -d
+```
+
+-   The `-d` flag runs the containers in "detached" mode, freeing up your terminal.
+-   The API will now be available at `http://localhost:8000`.
+-   For subsequent runs, you can just use `docker-compose up -d` to start everything again.
+
+**3. View Logs (Optional)**
+
+To monitor the application's output or debug issues, you can stream the logs from the API service:
+
+```bash
+docker-compose logs -f api
+```
+Press `Ctrl+C` to stop viewing the logs.
+
+**4. Stop the Application**
+
+When you are finished, use this command to gracefully stop and remove all the running containers and networks.
+
+```bash
+docker-compose down
+```
+
+## API Usage
 
 You can interact with the API using any HTTP client (e.g., `curl`, Postman, or Python's `requests`).
 
@@ -168,7 +200,8 @@ curl -X POST "http://localhost:8000/api/chat" \
     "session_id": "user-123-abc",
     "message": "I want to book an interview for Sajeena Malla at sajeena@example.com for tomorrow at 2:30 PM.",
     "model": "gemini"
-  }'```
+  }'
+```
 
 **Response:**
 
@@ -181,5 +214,4 @@ The API will respond with a generated reply, source chunks used for the answer, 
   "booking_created": false,
   "booking_id": null
 }
-
 ```
