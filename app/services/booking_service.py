@@ -116,7 +116,6 @@ class BookingService:
             return False
         m = message.lower()
 
-        # Negative patterns: info-seeking, not action
         negative_phrases = [
             "what is", "what's", "how do", "how to", "how does",
             "explain", "tell me about", "docs", "documentation",
@@ -145,7 +144,7 @@ class BookingService:
         return False
 
     def _create_booking_declaration(self) -> dict:
-        # OpenAPI-style dict per docs
+        
         return {
             "name": "create_booking",
             "description": (
@@ -192,7 +191,7 @@ class BookingService:
         history: List[Dict[str, str]],
         model: str = "gemini",
     ) -> Optional[BookingAttemptResult]:
-        # Only support Gemini tool calling here
+        
         if model.strip().lower() != "gemini":
             return None
         if not self.is_booking_intent(message):
@@ -238,14 +237,12 @@ class BookingService:
                 function_call = p.function_call
                 break
 
-        # If no function call, treat any text as clarification/general response
         if not function_call:
             text = (response.text or "").strip()
             if text:
                 return BookingAttemptResult(needs_clarification=True, reply=text, booking=None)
             return None
 
-        # We got a create_booking call suggestion
         if function_call.name != "create_booking":
             return None
 
@@ -267,8 +264,6 @@ class BookingService:
         if needs_ask:
             question = _clarification_question(name, email, date_str, time_str)
             return BookingAttemptResult(needs_clarification=True, reply=question, booking=None)
-
-        # Build BookingCreate; let Pydantic coerce date if needed
         try:
             booking = BookingCreate(name=name, email=email, date=date_str, time=time_str)
         except Exception:
@@ -278,11 +273,9 @@ class BookingService:
             )
             return BookingAttemptResult(needs_clarification=True, reply=question, booking=None)
 
-        # All good: return a ready-to-save booking
         return BookingAttemptResult(needs_clarification=False, reply="", booking=booking)
 
     def save_booking(self, db: Session, booking: BookingCreate) -> Booking:
-        # Coerce date/time for DB
         bdate = booking.date
         if isinstance(bdate, str):
             bdate = _date.fromisoformat(bdate)
@@ -309,7 +302,6 @@ class BookingService:
         if client is None:
             return ""
 
-        # Build function response part and send back
         function_response_part = types.Part.from_function_response(
             name=function_name,
             response={"result": function_result},
