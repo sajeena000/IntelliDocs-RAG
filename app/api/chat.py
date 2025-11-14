@@ -1,4 +1,3 @@
-# app/api/chat.py
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException
