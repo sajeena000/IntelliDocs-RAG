@@ -3,7 +3,6 @@ from functools import lru_cache
 from pydantic_settings import BaseSettings
 from pydantic import Field
 
-
 class Settings(BaseSettings):
     # App
     ENV: str = Field(default="development")
@@ -33,8 +32,6 @@ class Settings(BaseSettings):
     RERANKER_MODEL_PATH: str = Field(default="/app/models/ms-marco-MiniLM-L6-v2")
     SEMANTIC_CHUNK_MODEL_PATH: str = Field(default="/app/models/all-MiniLM-L6-v2")
     
-    # LLMs
-    # "gemini" or "local"
     DEFAULT_LLM: str = Field(default="gemini")
 
     # Gemini
