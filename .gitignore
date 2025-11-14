@@ -1,1 +1,15 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+pip-wheel-metadata/
+.idea/
+.vscode/
+
+/local_llm/
+/models/
+
 .env
